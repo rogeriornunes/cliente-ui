@@ -1,0 +1,168 @@
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+  <a class="navbar-brand" style="color:white;" (click)="listar()">Clientes</a>
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarColor02"
+          aria-controls="navbarColor02" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+  <div class="collapse navbar-collapse" id="navbarColor02">
+    <ul class="navbar-nav mr-auto">
+      <li class="nav-item active">
+        <a class="nav-link" (click)="add()">+ Cliente<span class="sr-only">(current)</span></a>
+      </li>
+    </ul>
+  </div>
+</nav>
+<div class="container" id="divPrincipal" #divPrincipal>
+  <div class="row">
+    <div *ngFor="let cliente of clientes" class="col-md-6 col-xl-3">
+      <div class="card m-b-30">
+        <div class="card-body row">
+          <div class="col-6 card-title align-self-center mb-0">
+            <h5>{{cliente?.nome}}</h5>
+            <p class="m-0">{{cliente?.rg}}</p>
+          </div>
+        </div>
+        <ul class="list-group list-group-flush">
+          <li class="list-group-item"><em class="fa fa-envelope float-right"></em>{{cliente?.rg}}</li>
+          <li class="list-group-item"><em class="fa fa-phone float-right"></em>Telefone Principal: {{cliente?.telefonePrincipal}}</li>
+          <li class="list-group-item"><em
+            class="fa fa-calendar float-right"></em>Cadastro: {{cliente?.dataCadastro | date: 'dd/MM/yyyy HH:mm:ss'}}
+          </li>
+        </ul>
+        <div class="card-body">
+          <div class="float-right btn-group btn-group-sm">
+            <a (click)="abrirDetalhe(cliente, 'edit')" class="btn btn-primary tooltips" data-placement="top"
+               data-original-title="Edit"><em class="fa fa-pencil"></em> </a>
+            <a (click)="abrirDetalhe(cliente, 'delete')" class="btn btn-secondary tooltips" data-placement="top"
+               data-original-title="Delete"><em class="fa fa-times"></em></a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <div class="modal fade" id="clienteModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="clienteLabel">Cadastro de Cliente</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <form >
+            <div [formGroup]="formGroup" class="form-group">
+              <label>Tipo</label>
+              <br>
+              <select [(ngModel)]="selectedDefault" formControlName="tipo"
+                      (ngModelChange)="onchangeTipoPessoa($event)">
+                <option [ngValue]="tipo.sigla" *ngFor="let tipo of tipos" [ngValue]="tipo">
+                  {{ tipo.name }}
+                </option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="nome">Nome</label>
+              <input type="text" [(ngModel)]="clienteSelecionado.nome" name="nome" class="form-control" id="nome"
+                     placeholder="Nome"
+                     required>
+            </div>
+            <div *ngIf="this.tipoPessoaSelecionado" class="form-group">
+              <label for="cpf">CPF</label>
+              <input type="text" name="cpf" class="form-control" id="cpf" mask="000.000.000-00"
+                     [(ngModel)]="clienteSelecionado.cpf" placeholder="CPF"
+                     required>
+            </div>
+            <div *ngIf="this.tipoPessoaSelecionado" class="form-group">
+              <label for="rg">RG</label>
+              <input type="text" name="rg" class="form-control"
+                     [(ngModel)]="clienteSelecionado.rg"
+                     id="rg" placeholder="RG"
+                     required>
+            </div>
+            <div *ngIf="!this.tipoPessoaSelecionado" class="form-group">
+              <label for="cnpj">CNPJ</label>
+              <input type="text" name="cnpj" class="form-control" mask="00.000.000/0000-00"
+                     [(ngModel)]="clienteSelecionado.cnpj"
+                     id="cnpj" placeholder="CNPJ"
+                     required>
+            </div>
+            <div *ngIf="!this.tipoPessoaSelecionado" class="form-group">
+              <label for="ie">IE</label>
+              <input type="text" name="ie" class="form-control" id="ie"
+                     [(ngModel)]="clienteSelecionado.ie" placeholder="IE"
+                     required>
+            </div>
+            <div class="form-group">
+              <label for="telefonePrincipal">Telefone Principal</label>
+              <input type="text" name="telefonePrincipal" class="form-control" mask="(00) 00000-0000"
+                     [(ngModel)]="clienteSelecionado.telefonePrincipal"
+                     id="telefonePrincipal" placeholder="Telefone Principal"
+                     required>
+            </div>
+            <div class="form-group">
+              <label for="telefoneAlternativo">Telefone Alternativo</label>
+              <input type="text" name="telefone" class="form-control" mask="(00) 00000-0000"
+                     [(ngModel)]="clienteSelecionado.telefoneAlternativo"
+                     id="telefoneAlternativo" placeholder="Telefone Alternativo"
+                     required>
+            </div>
+            <div class="form-group">
+              <label for="status">
+                Status:
+              </label>
+              <div class="col-sm-5 form-group">
+                <input type="checkbox" formControlName="status" class="form-check-input" id="status" name="status">
+                <label class="form-check-label" for="status">&emsp;Ativo</label>
+              </div>
+            </div>
+            <div class="form-group">
+              <label><strong>Data Cadastro</strong></label>
+              <strong
+                class="fa fa-calendar float-right"></strong>: {{clienteSelecionado?.dataCadastro | date: 'dd/MM/yyyy HH:mm:ss'}}
+            </div>
+            <div class="modal-footer">
+              <button type="button" id="btnFechar" #btnFechar class="btn btn-secondary" data-dismiss="modal">Fechar
+              </button>
+              <button type="button" (click)="salvarCliente()"
+                      class="btn btn-primary">Salvar
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <div class="modal fade" id="deleteClienteModal" tabindex="-1" role="dialog" aria-labelledby="deleteModelLabel"
+       aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="deleteModelLabel">Deletar Cliente</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">X</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <p>Confirma a exclusão do Cliente {{clienteSelecionado?.nome}}?</p>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Não</button>
+            <button (click)="deletar(clienteSelecionado?.id)" class="btn btn-danger" data-dismiss="modal">Sim</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div *ngIf="clientes?.length === 0" class="col-lg-12 col-md-12 col-xl-12">
+  <div class="alert alert-info" role="alert">
+    <h4 class="alert-heading">Sem clientes!</h4>
+    <p>Não há cliente cadastrado.</p>
+  </div>
+</div>
