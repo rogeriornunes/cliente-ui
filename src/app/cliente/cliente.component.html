@@ -28,11 +28,13 @@
           </div>
         </div>
         <ul class="list-group list-group-flush">
+          <li class="list-group-item-text alert" [ngClass]="{'alert-success':cliente?.status, 'alert-danger': !cliente?.status}">
+            <em></em>Status: <br> {{cliente?.status ? "Ativo" : "Inativo"}}</li>
+          <li class="list-group-item"><em></em>Tipo: <br> {{cliente?.tipo}}</li>
           <li class="list-group-item"><em></em>CPF: <br> {{cliente?.cpf}}</li>
           <li class="list-group-item"><em></em>RG: <br> {{cliente?.rg}}</li>
           <li class="list-group-item"><em></em>CNPJ:<br> {{cliente?.cnpj}}</li>
           <li class="list-group-item"><em></em>IE: <br> {{cliente?.ie}}</li>
-          <li class="list-group-item"><em></em>Status: <br> {{cliente?.status}}</li>
           <li class="list-group-item"><em class="fa fa-phone float-right"></em>Telefone Principal: <br>  {{cliente?.telefonePrincipal}}</li>
           <li class="list-group-item"><em class="fa fa-phone float-right"></em>Telefone Alternativo: <br>  {{cliente?.telefoneAlternativo}}</li>
           <li class="list-group-item"><em
@@ -146,7 +148,8 @@
                 Status:
               </label>
               <div class="col-sm-5 form-group">
-                <input type="checkbox" formControlName="status" class="form-check-input" id="status" name="status">
+                <input type="checkbox" class="form-control" class="form-check-input" id="status" name="status"
+                       [(ngModel)]="clienteSelecionado.status">
                 <label class="form-check-label" for="status">&emsp;Ativo</label>
               </div>
             </div>

@@ -8,5 +8,6 @@ export interface Cliente {
   telefonePrincipal?: string;
   telefoneAlternativo?: string;
   status?: boolean;
+  tipo?: string;
   dataCadastro?: string;
 }
