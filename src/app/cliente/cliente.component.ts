@@ -162,7 +162,6 @@ export class ClienteComponent implements OnInit {
     }
   }
 
-
   onMudarPaginas(pagina: number) {
     this.pager = this.pagerService.getPager(this.clientesVisiveis.length, pagina);
     this.clientesPaginadas = this.clientesVisiveis.slice(this.pager.startIndex, this.pager.endIndex + 1);
@@ -170,6 +169,7 @@ export class ClienteComponent implements OnInit {
 
   limparTipoPessoa(){
     this.tipoPessoa = "";
+    this.selectedDefault = this.tipos[0];
   }
 
   setSelectedTipoPessoa() {
