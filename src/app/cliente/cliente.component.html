@@ -13,20 +13,30 @@
   </div>
 </nav>
 <div class="container" id="divPrincipal" #divPrincipal>
+  <div class="col-sm-5  form-group">
+    <input type="text"
+           (keyup)="filtrarClientes()"
+           [(ngModel)]="query" class="form-control"
+           placeholder="Filtrar pelo nome..." />
+  </div>
   <div class="row">
-    <div *ngFor="let cliente of clientes" class="col-md-6 col-xl-3">
+    <div *ngFor="let cliente of clientesPaginadas" class="col-md-6 col-xl-3">
       <div class="card m-b-30">
         <div class="card-body row">
-          <div class="col-6 card-title align-self-center mb-0">
-            <h5>{{cliente?.nome}}</h5>
-            <p class="m-0">{{cliente?.rg}}</p>
+          <div class="col-12 card-title align-self-center mb-0">
+            <h6>{{cliente?.nome}}</h6>
           </div>
         </div>
         <ul class="list-group list-group-flush">
-          <li class="list-group-item"><em class="fa fa-envelope float-right"></em>{{cliente?.rg}}</li>
-          <li class="list-group-item"><em class="fa fa-phone float-right"></em>Telefone Principal: {{cliente?.telefonePrincipal}}</li>
+          <li class="list-group-item"><em></em>CPF: <br> {{cliente?.cpf}}</li>
+          <li class="list-group-item"><em></em>RG: <br> {{cliente?.rg}}</li>
+          <li class="list-group-item"><em></em>CNPJ:<br> {{cliente?.cnpj}}</li>
+          <li class="list-group-item"><em></em>IE: <br> {{cliente?.ie}}</li>
+          <li class="list-group-item"><em></em>Status: <br> {{cliente?.status}}</li>
+          <li class="list-group-item"><em class="fa fa-phone float-right"></em>Telefone Principal: <br>  {{cliente?.telefonePrincipal}}</li>
+          <li class="list-group-item"><em class="fa fa-phone float-right"></em>Telefone Alternativo: <br>  {{cliente?.telefoneAlternativo}}</li>
           <li class="list-group-item"><em
-            class="fa fa-calendar float-right"></em>Cadastro: {{cliente?.dataCadastro | date: 'dd/MM/yyyy HH:mm:ss'}}
+            class="fa fa-calendar float-right"></em>Data de Cadastro: <br> {{cliente?.dataCadastro | date: 'dd/MM/yyyy HH:mm:ss'}}
           </li>
         </ul>
         <div class="card-body">
@@ -38,6 +48,27 @@
           </div>
         </div>
       </div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-sm-5 ">
+      <ul *ngIf="pager.pages && pager.pages.length" class="pagination pagination-sm">
+        <li [ngClass]="{disabled:pager.currentPage === 1}">
+          <a (click)="onMudarPaginas(1)">&laquo;</a>
+        </li>
+        <li [ngClass]="{disabled:pager.currentPage === 1}">
+          <a (click)="onMudarPaginas(pager.currentPage - 1)">&lt;</a>
+        </li>
+        <li *ngFor="let page of pager.pages" [ngClass]="{active:pager.currentPage === page}">
+          <a (click)="onMudarPaginas(page)">{{page}}</a>
+        </li>
+        <li [ngClass]="{disabled:pager.currentPage === pager.totalPages}">
+          <a (click)="onMudarPaginas(pager.currentPage + 1)">&gt;</a>
+        </li>
+        <li [ngClass]="{disabled:pager.currentPage === pager.totalPages}">
+          <a (click)="onMudarPaginas(pager.totalPages)">&raquo;</a>
+        </li>
+      </ul>
     </div>
   </div>
 

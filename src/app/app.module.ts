@@ -7,6 +7,7 @@ import {HttpClientModule} from "@angular/common/http";
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {ClienteService} from "./service/cliente.service";
 import {NgxMaskModule} from "ngx-mask";
+import {PagerService} from "./service/pager.service";
 
 @NgModule({
   declarations: [
@@ -20,7 +21,7 @@ import {NgxMaskModule} from "ngx-mask";
     ReactiveFormsModule,
     NgxMaskModule.forRoot({validation: true})
   ],
-  providers: [ClienteService],
+  providers: [ClienteService, PagerService],
   bootstrap: [AppComponent]
 })
 export class AppModule {
