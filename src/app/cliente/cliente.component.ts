@@ -2,7 +2,7 @@ import {Component, ElementRef, OnInit, ViewChild} from '@angular/core';
 import {Cliente} from "../modelo/cliente";
 import {ClienteService} from "../service/cliente.service";
 import {HttpErrorResponse} from "@angular/common/http";
-import {FormBuilder, FormControl, FormGroup, Validators} from "@angular/forms";
+import {AbstractControl, FormBuilder, FormControl, FormGroup, Validators} from "@angular/forms";
 import {PagerService} from "../service/pager.service";
 
 @Component({
@@ -18,7 +18,7 @@ export class ClienteComponent implements OnInit {
     {name: 'Pessoa Juridica', sigla: 'PJ'}
   ];
 
-  formGroup = new FormGroup({
+  formCliente = new FormGroup({
     tipo: new FormControl(this.tipos[2])
   });
 
@@ -35,31 +35,32 @@ export class ClienteComponent implements OnInit {
   tipoPessoa: string | undefined;
   selectedDefault = this.tipos[0];
   ngOnInit(): void {
-
     this.listar();
 
-    this.formGroup = this.formBuilder.group({
+    this.formCliente = this.formBuilder.group({
       nome: ['', [Validators.required, Validators.minLength(3)]],
-      tipo: ['', [Validators.required, Validators.minLength(3)]],
-      status: [false]
+      tipo: ['', [Validators.required]],
+      cpf: ['', []],
+      cnpj: ['', []]
     });
   }
 
   static criarCliente(): Cliente {
     return {
       id: 0,
-      nome: "",
-      rg: "",
-      cpf: "",
-      cnpj: "",
-      ie: "",
-      telefonePrincipal: "",
-      telefoneAlternativo: "",
+      nome: '',
+      rg: '',
+      cpf: '',
+      cnpj: '',
+      ie: '',
+      telefonePrincipal: '',
+      telefoneAlternativo: '',
       status: false,
-      tipo: "",
-      dataCadastro: ""
+      tipo: '',
+      dataCadastro: ''
     }
   }
+  get f() { return this.formCliente.controls; }
 
   public listar() {
     this.clienteService.listar().subscribe((response: Cliente[]) => {
@@ -89,7 +90,7 @@ export class ClienteComponent implements OnInit {
     }
     if (operacao === 'edit') {
       this.clienteSelecionado = cliente;
-      this.setSelectedTipoPessoa(operacao)
+      this.setSelectedTipoPessoa()
       button.setAttribute('data-target', '#clienteModal');
     }
     if (operacao === 'delete') {
@@ -120,11 +121,10 @@ export class ClienteComponent implements OnInit {
     const form = new FormData();
 
     this.btnFechar.nativeElement.click();
-    this.setSelectedTipoPessoa('add');
+    this.setSelectedTipoPessoa();
 
     if (this.clienteSelecionado) {
       this.clienteSelecionado.tipo = this.tipoPessoa;
-      this.limparTipoPessoa();
       this.clienteService.salvar(this.clienteSelecionado, form).subscribe(
         (response: Cliente) => {
           console.log(response);
@@ -135,6 +135,7 @@ export class ClienteComponent implements OnInit {
           alert(error.message);
         }
       );
+      this.limparTipoPessoa();
     }
   }
 
@@ -161,6 +162,7 @@ export class ClienteComponent implements OnInit {
     }
   }
 
+
   onMudarPaginas(pagina: number) {
     this.pager = this.pagerService.getPager(this.clientesVisiveis.length, pagina);
     this.clientesPaginadas = this.clientesVisiveis.slice(this.pager.startIndex, this.pager.endIndex + 1);
@@ -170,16 +172,12 @@ export class ClienteComponent implements OnInit {
     this.tipoPessoa = "";
   }
 
-  setSelectedTipoPessoa(operacao: string) {
-    if (operacao === 'add') {
-      this.selectedDefault = this.tipos[0];
-    } else if (operacao === 'edit') {
+  setSelectedTipoPessoa() {
       if (this.clienteSelecionado.tipo === 'Pessoa Fisica') {
         this.selectedDefault = this.tipos[0];
       } else {
         this.selectedDefault = this.tipos[1];
       }
-    }
   }
 
 }

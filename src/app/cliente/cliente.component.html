@@ -31,12 +31,14 @@
           <li class="list-group-item-text alert" [ngClass]="{'alert-success':cliente?.status, 'alert-danger': !cliente?.status}">
             <em></em>Status: <br> {{cliente?.status ? "Ativo" : "Inativo"}}</li>
           <li class="list-group-item"><em></em>Tipo: <br> {{cliente?.tipo}}</li>
-          <li class="list-group-item"><em></em>CPF: <br> {{cliente?.cpf}}</li>
-          <li class="list-group-item"><em></em>RG: <br> {{cliente?.rg}}</li>
-          <li class="list-group-item"><em></em>CNPJ:<br> {{cliente?.cnpj}}</li>
-          <li class="list-group-item"><em></em>IE: <br> {{cliente?.ie}}</li>
-          <li class="list-group-item"><em class="fa fa-phone float-right"></em>Telefone Principal: <br>  {{cliente?.telefonePrincipal}}</li>
-          <li class="list-group-item"><em class="fa fa-phone float-right"></em>Telefone Alternativo: <br>  {{cliente?.telefoneAlternativo}}</li>
+          <li class="list-group-item" *ngIf="cliente?.cpf != ''"><em></em>CPF: <br> {{cliente?.cpf}}</li>
+          <li class="list-group-item" *ngIf="cliente?.rg != ''"><em></em>RG: <br> {{cliente?.rg}}</li>
+          <li class="list-group-item" *ngIf="cliente?.cnpj != ''"><em></em>CNPJ:<br> {{cliente?.cnpj}}</li>
+          <li class="list-group-item" *ngIf="cliente?.ie != ''"><em></em>IE: <br> {{cliente?.ie}}</li>
+          <li class="list-group-item" *ngIf="cliente?.telefonePrincipal != ''">
+            <em class="fa fa-phone float-right"></em>Telefone Principal: <br>  {{cliente?.telefonePrincipal}}</li>
+          <li class="list-group-item" *ngIf="cliente?.telefoneAlternativo != ''">
+            <em class="fa fa-phone float-right"></em>Telefone Alternativo: <br>  {{cliente?.telefoneAlternativo}}</li>
           <li class="list-group-item"><em
             class="fa fa-calendar float-right"></em>Data de Cadastro: <br> {{cliente?.dataCadastro | date: 'dd/MM/yyyy HH:mm:ss'}}
           </li>
@@ -86,7 +88,7 @@
         </div>
         <div class="modal-body">
           <form >
-            <div [formGroup]="formGroup" class="form-group">
+            <div [formGroup]="formCliente" class="form-group">
               <label>Tipo</label>
               <br>
               <select [(ngModel)]="selectedDefault" formControlName="tipo"
@@ -97,31 +99,40 @@
               </select>
             </div>
 
-            <div class="form-group">
+            <div [formGroup]="formCliente" class="form-group">
               <label for="nome">Nome</label>
-              <input type="text" [(ngModel)]="clienteSelecionado.nome" name="nome" class="form-control" id="nome"
+              <input type="text" [(ngModel)]="clienteSelecionado.nome" name="nome" id="nome" formControlName="nome" class="form-control"
                      placeholder="Nome"
                      required>
+              <div class="alert alert-danger" *ngIf="!f.nome.valid">
+                Preencha corretamente o nome (min.: 3 dígitos).
+              </div>
             </div>
-            <div *ngIf="this.tipoPessoaSelecionado" class="form-group">
+            <div [formGroup]="formCliente" *ngIf="this.tipoPessoaSelecionado" class="form-group">
               <label for="cpf">CPF</label>
-              <input type="text" name="cpf" class="form-control" id="cpf" mask="000.000.000-00"
+              <input type="text" name="cpf" id="cpf" formControlName="cpf" class="form-control" mask="000.000.000-00"
                      [(ngModel)]="clienteSelecionado.cpf" placeholder="CPF"
                      required>
+              <div class="alert alert-danger" *ngIf="!f.cpf.valid">
+                Preencha corretamente o nome (min.: 11 dígitos).
+              </div>
             </div>
             <div *ngIf="this.tipoPessoaSelecionado" class="form-group">
               <label for="rg">RG</label>
-              <input type="text" name="rg" class="form-control"
+              <input type="text" name="rg" id="rg" class="form-control"
                      [(ngModel)]="clienteSelecionado.rg"
-                     id="rg" placeholder="RG"
+                     placeholder="RG"
                      required>
             </div>
-            <div *ngIf="!this.tipoPessoaSelecionado" class="form-group">
+            <div [formGroup]="formCliente" *ngIf="!this.tipoPessoaSelecionado" class="form-group">
               <label for="cnpj">CNPJ</label>
-              <input type="text" name="cnpj" class="form-control" mask="00.000.000/0000-00"
+              <input type="text" name="cnpj" id="cnpj" formControlName="cnpj"  class="form-control" mask="00.000.000/0000-00"
                      [(ngModel)]="clienteSelecionado.cnpj"
-                     id="cnpj" placeholder="CNPJ"
+                     placeholder="CNPJ"
                      required>
+              <div class="alert alert-danger" *ngIf="!f.cnpj.valid">
+                Preencha corretamente o nome (min.: 14 dígitos).
+              </div>
             </div>
             <div *ngIf="!this.tipoPessoaSelecionado" class="form-group">
               <label for="ie">IE</label>
@@ -131,16 +142,16 @@
             </div>
             <div class="form-group">
               <label for="telefonePrincipal">Telefone Principal</label>
-              <input type="text" name="telefonePrincipal" class="form-control" mask="(00) 00000-0000"
+              <input type="text" name="telefonePrincipal" id="telefonePrincipal" class="form-control" mask="(00) 00000-0000"
                      [(ngModel)]="clienteSelecionado.telefonePrincipal"
-                     id="telefonePrincipal" placeholder="Telefone Principal"
+                     placeholder="Telefone Principal"
                      required>
             </div>
             <div class="form-group">
               <label for="telefoneAlternativo">Telefone Alternativo</label>
-              <input type="text" name="telefone" class="form-control" mask="(00) 00000-0000"
+              <input type="text" name="telefone" id="telefoneAlternativo" class="form-control" mask="(00) 00000-0000"
                      [(ngModel)]="clienteSelecionado.telefoneAlternativo"
-                     id="telefoneAlternativo" placeholder="Telefone Alternativo"
+                     placeholder="Telefone Alternativo"
                      required>
             </div>
             <div class="form-group">
@@ -148,7 +159,7 @@
                 Status:
               </label>
               <div class="col-sm-5 form-group">
-                <input type="checkbox" class="form-control" class="form-check-input" id="status" name="status"
+                <input type="checkbox" name="status" id="status" class="form-control" class="form-check-input"
                        [(ngModel)]="clienteSelecionado.status">
                 <label class="form-check-label" for="status">&emsp;Ativo</label>
               </div>
@@ -161,7 +172,7 @@
             <div class="modal-footer">
               <button type="button" id="btnFechar" #btnFechar class="btn btn-secondary" data-dismiss="modal">Fechar
               </button>
-              <button type="button" (click)="salvarCliente()"
+              <button type="button" (click)="salvarCliente()" [disabled]="!formCliente.valid"
                       class="btn btn-primary">Salvar
               </button>
             </div>
