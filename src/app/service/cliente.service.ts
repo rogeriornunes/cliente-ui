@@ -16,6 +16,10 @@ export class ClienteService {
     return this.http.get<Cliente[]>(`${this.apiServiceUrl}/api/clientes`)
   }
 
+  public buscarClientePorId(id: number) {
+    return this.http.get<Cliente>(`${this.apiServiceUrl}/api/clientes/${id}`);
+  }
+
   public salvar(cliente: Cliente, formData: FormData): Observable<Cliente> {
 
     if (cliente.id) {

@@ -72,8 +72,9 @@ export class ClienteComponent implements OnInit {
         this.onMudarPaginas(1);
       },
       (error: HttpErrorResponse) => {
-        console.error(error.message)
-        this.notificationService.toast.error('Mensagem', error.message);
+        console.error(error.error.message);
+        const mensagem =  error.error.message
+        this.notificationService.toast.error('Mensagem', mensagem);
       }
     );
   }
@@ -130,21 +131,26 @@ export class ClienteComponent implements OnInit {
       const cpfValue = this.clienteSelecionado.cpf;
       const cnpjValue = this.clienteSelecionado.cnpj;
       this.clienteSelecionado.tipo = this.tipoPessoa;
-      if (this.isValidCpf(cpfValue) || this.isValidCnpj(cnpjValue)) {
-        this.clienteService.salvar(this.clienteSelecionado, form).subscribe(
-          (response: Cliente) => {
-            console.log(response);
-            this.listar();
-            ClienteComponent.criarCliente();
-          },
-          (error: HttpErrorResponse) => {
-            console.error(error.message);
-            this.notificationService.toast.error('Mensagem', error.message);
-          }
-        );
+      if (this.isValidCpf(cpfValue) && this.isValidCnpj(cnpjValue)) {
+        this.salvar(form);
       }
-      this.limparTipoPessoa();
     }
+    this.limparTipoPessoa();
+  }
+
+  salvar(form: FormData){
+    this.clienteService.salvar(this.clienteSelecionado, form).subscribe(
+      (response: Cliente) => {
+        console.log(response);
+        this.listar();
+        ClienteComponent.criarCliente();
+      },
+      (error: HttpErrorResponse) => {
+        console.error(error.error.message);
+        const mensagem =  error.error.message
+        this.notificationService.toast.error('Mensagem', mensagem);
+      }
+    );
   }
 
   public deletar(id: number | undefined): void {
@@ -154,8 +160,9 @@ export class ClienteComponent implements OnInit {
           this.listar();
         },
         (error: HttpErrorResponse) => {
-          console.error(error.message);
-          this.notificationService.toast.error('Mensagem', error.message);
+          console.error(error.error.message);
+          const mensagem =  error.error.message
+          this.notificationService.toast.error('Mensagem', mensagem);
         }
       );
     }
@@ -167,19 +174,26 @@ export class ClienteComponent implements OnInit {
       if (cpf.isValid(cpfValue)) {
         return true
       } else {
+        this.listar();
         this.notificationService.toast.warning('Mensagem', 'CPF informado invalido!');
       }
+    } else {
+      return true;
     }
   }
 
+
   // @ts-ignore
-  isValidCnpj(cnpjValue: any): boolean {
+  isValidCnpj(cnpjValue: any) {
     if (cnpjValue != '') {
       if (cnpj.isValid(cnpjValue)) {
-        return true
+        return true;
       } else {
+        this.listar();
         this.notificationService.toast.warning('Mensagem', 'CNPJ informado invalido!');
       }
+    } else {
+      return true;
     }
   }
 
@@ -208,6 +222,28 @@ export class ClienteComponent implements OnInit {
     } else {
       this.selectedDefault = this.tipos[1];
     }
+  }
+
+  disabilitaInputCpf(){
+    const cpf = this.clienteSelecionado.cpf
+    if(cpf?.length !== 0){
+      this.formCliente.controls['cpf'].disable();
+    }
+  }
+
+  disabilitaInputCnpj(){
+    const cnpj = this.clienteSelecionado.cnpj
+    if(cnpj?.length !== 0) {
+      this.formCliente.controls['cnpj'].disable();
+    }
+  }
+
+  habilitaInputCpf() {
+    this.formCliente.controls['cpf'].enable();
+  }
+
+  habilitaInputCnpj() {
+    this.formCliente.controls['cnpj'].enable();
   }
 
 }
