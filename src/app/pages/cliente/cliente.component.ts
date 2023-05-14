@@ -1,9 +1,11 @@
 import {Component, ElementRef, OnInit, ViewChild} from '@angular/core';
-import {Cliente} from "../modelo/cliente";
-import {ClienteService} from "../service/cliente.service";
+import {Cliente} from "../../model/cliente";
+import {ClienteService} from "../../service/cliente.service";
 import {HttpErrorResponse} from "@angular/common/http";
-import {AbstractControl, FormBuilder, FormControl, FormGroup, Validators} from "@angular/forms";
-import {PagerService} from "../service/pager.service";
+import {FormBuilder, FormControl, FormGroup, Validators} from "@angular/forms";
+import {PagerService} from "../../service/pager.service";
+import {cnpj, cpf} from "cpf-cnpj-validator";
+import {NotificationService} from "../../notification/notification.service";
 
 @Component({
   selector: 'app-cliente',
@@ -11,7 +13,7 @@ import {PagerService} from "../service/pager.service";
   styleUrls: ['./cliente.component.css']
 })
 export class ClienteComponent implements OnInit {
-  constructor(private clienteService: ClienteService, private pagerService: PagerService, private formBuilder: FormBuilder) {
+  constructor(private clienteService: ClienteService, private pagerService: PagerService, private formBuilder: FormBuilder, private notificationService: NotificationService) {
   }
   tipos = [
     {name: 'Pessoa Fisica', sigla: 'PF'},
@@ -71,6 +73,7 @@ export class ClienteComponent implements OnInit {
       },
       (error: HttpErrorResponse) => {
         console.error(error.message)
+        this.notificationService.toast.error('Mensagem', error.message);
       }
     );
   }
@@ -124,17 +127,22 @@ export class ClienteComponent implements OnInit {
     this.setSelectedTipoPessoa();
 
     if (this.clienteSelecionado) {
+      const cpfValue = this.clienteSelecionado.cpf;
+      const cnpjValue = this.clienteSelecionado.cnpj;
       this.clienteSelecionado.tipo = this.tipoPessoa;
-      this.clienteService.salvar(this.clienteSelecionado, form).subscribe(
-        (response: Cliente) => {
-          console.log(response);
-          this.listar();
-          ClienteComponent.criarCliente();
-        },
-        (error: HttpErrorResponse) => {
-          alert(error.message);
-        }
-      );
+      if (this.isValidCpf(cpfValue) || this.isValidCnpj(cnpjValue)) {
+        this.clienteService.salvar(this.clienteSelecionado, form).subscribe(
+          (response: Cliente) => {
+            console.log(response);
+            this.listar();
+            ClienteComponent.criarCliente();
+          },
+          (error: HttpErrorResponse) => {
+            console.error(error.message);
+            this.notificationService.toast.error('Mensagem', error.message);
+          }
+        );
+      }
       this.limparTipoPessoa();
     }
   }
@@ -143,13 +151,35 @@ export class ClienteComponent implements OnInit {
     if (id) {
       this.clienteService.deletar(id).subscribe(
         (response: void) => {
-          console.log(response);
           this.listar();
         },
         (error: HttpErrorResponse) => {
           console.error(error.message);
+          this.notificationService.toast.error('Mensagem', error.message);
         }
       );
+    }
+  }
+
+  // @ts-ignore
+  isValidCpf(cpfValue: any): boolean {
+    if (cpfValue != '') {
+      if (cpf.isValid(cpfValue)) {
+        return true
+      } else {
+        this.notificationService.toast.warning('Mensagem', 'CPF informado invalido!');
+      }
+    }
+  }
+
+  // @ts-ignore
+  isValidCnpj(cnpjValue: any): boolean {
+    if (cnpjValue != '') {
+      if (cnpj.isValid(cnpjValue)) {
+        return true
+      } else {
+        this.notificationService.toast.warning('Mensagem', 'CNPJ informado invalido!');
+      }
     }
   }
 
@@ -173,11 +203,11 @@ export class ClienteComponent implements OnInit {
   }
 
   setSelectedTipoPessoa() {
-      if (this.clienteSelecionado.tipo === 'Pessoa Fisica') {
-        this.selectedDefault = this.tipos[0];
-      } else {
-        this.selectedDefault = this.tipos[1];
-      }
+    if (this.clienteSelecionado.tipo === 'Pessoa Fisica') {
+      this.selectedDefault = this.tipos[0];
+    } else {
+      this.selectedDefault = this.tipos[1];
+    }
   }
 
 }
