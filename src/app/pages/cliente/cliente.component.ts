@@ -149,6 +149,7 @@ export class ClienteComponent implements OnInit {
         console.error(error.error.message);
         const mensagem =  error.error.message
         this.notificationService.toast.error('Mensagem', mensagem);
+        this.listar();
       }
     );
   }
