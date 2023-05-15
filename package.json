@@ -4,15 +4,18 @@
   "description": "Cadastro de Cliente",
   "author": "Rogério Ricardo Nunes <rogerioricardonunes> (https://github.com/rogeriornunes)",
   "engines": {
-    "node": "18.13.0",
-    "npm": "9.3.0"
+    "node": "14.18.3",
+    "npm": "6.14.15"
   },
   "scripts": {
     "ng": "ng",
-    "start": "node server.js",
-    "build": "ng build --configuration=production",
-    "watch": "ng build --watch --configuration development",
-    "heroku-postbuild": "ng build --configuration=production"
+    "start": "ng serve",
+    "build": "ng build",
+    "test": "ng test",
+    "lint": "ng lint",
+    "e2e": "ng e2e",
+    "deploy:ghdocs": "ng build --prod --output-path docs --base-href /cliente-ui/",
+    "heroku-postbuild": "ng build --prod"
   },
   "private": true,
   "dependencies": {
@@ -25,6 +28,8 @@
     "@angular/platform-browser-dynamic": "~12.2.0",
     "@angular/router": "~12.2.0",
     "cpf-cnpj-validator": "^1.0.3",
+    "express": "^4.18.2",
+    "i": "^0.3.7",
     "ngx-mask": "^13.1.15",
     "ngx-toastr": "^14.0.0",
     "rxjs": "~6.6.0",
