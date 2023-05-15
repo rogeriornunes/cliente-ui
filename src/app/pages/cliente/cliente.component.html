@@ -21,6 +21,8 @@
   </div>
 
   <div [formGroup]="formCliente" class="col-sm-5 form-group">
+    <label>Filtrar por status</label>
+    <br>
     <select  [(ngModel)]="selectedStatusDefault" formControlName="statusCliente"
             (ngModelChange)="onchangeFiltroStatus($event)">
       <option *ngFor="let statusCliente of status" [ngValue]="statusCliente">
@@ -28,7 +30,6 @@
       </option>
     </select>
   </div>
-
 
   <div class="row">
     <div *ngFor="let cliente of clientesPaginadas" class="col-md-6 col-xl-3">
