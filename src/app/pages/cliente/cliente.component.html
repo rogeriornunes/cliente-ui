@@ -19,6 +19,17 @@
            [(ngModel)]="query" class="form-control"
            placeholder="Filtrar pelo nome..." />
   </div>
+
+  <div [formGroup]="formCliente" class="col-sm-5 form-group">
+    <select  [(ngModel)]="selectedStatusDefault" formControlName="statusCliente"
+            (ngModelChange)="onchangeFiltroStatus($event)">
+      <option *ngFor="let statusCliente of status" [ngValue]="statusCliente">
+        {{ statusCliente.name }}
+      </option>
+    </select>
+  </div>
+
+
   <div class="row">
     <div *ngFor="let cliente of clientesPaginadas" class="col-md-6 col-xl-3">
       <div class="card m-b-30">

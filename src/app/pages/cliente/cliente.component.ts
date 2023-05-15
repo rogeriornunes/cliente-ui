@@ -20,8 +20,15 @@ export class ClienteComponent implements OnInit {
     {name: 'Pessoa Juridica', sigla: 'PJ'}
   ];
 
+  status = [
+    {name: 'Todos'},
+    {name: 'Ativo'},
+    {name: 'Inativo'}
+  ];
+
   formCliente = new FormGroup({
-    tipo: new FormControl(this.tipos[2])
+    tipo: new FormControl(this.tipos[2]),
+    statusClientes: new FormControl(this.status[3])
   });
 
   @ViewChild('btnFechar') private btnFechar!: ElementRef<HTMLElement>;
@@ -35,6 +42,9 @@ export class ClienteComponent implements OnInit {
   pager: any = {};
   tipoPessoaSelecionado: boolean | undefined;
   tipoPessoa: string | undefined;
+  statusCliente: string | undefined;
+  statusClienteSelecionado: boolean | undefined;
+  selectedStatusDefault = this.status[0];
   selectedDefault = this.tipos[0];
   ngOnInit(): void {
     this.listar();
@@ -42,6 +52,7 @@ export class ClienteComponent implements OnInit {
     this.formCliente = this.formBuilder.group({
       nome: ['', [Validators.required, Validators.minLength(3)]],
       tipo: ['', [Validators.required]],
+      statusCliente: ['', []],
       cpf: ['', []],
       cnpj: ['', []]
     });
@@ -65,6 +76,7 @@ export class ClienteComponent implements OnInit {
   get f() { return this.formCliente.controls; }
 
   public listar() {
+    this.setSelectedStatusCliente();
     this.clienteService.listar().subscribe((response: Cliente[]) => {
         this.clientes = response;
         this.clientesVisiveis = this.clientes;
@@ -95,9 +107,11 @@ export class ClienteComponent implements OnInit {
     if (operacao === 'edit') {
       this.clienteSelecionado = cliente;
       this.setSelectedTipoPessoa()
+      this.setSelectedStatusCliente();
       button.setAttribute('data-target', '#clienteModal');
     }
     if (operacao === 'delete') {
+      this.setSelectedStatusCliente();
       this.clienteSelecionado = cliente;
       button.setAttribute('data-target', '#deleteClienteModal');
     }
@@ -126,6 +140,7 @@ export class ClienteComponent implements OnInit {
 
     this.btnFechar.nativeElement.click();
     this.setSelectedTipoPessoa();
+    this.setSelectedStatusCliente();
 
     if (this.clienteSelecionado) {
       const cpfValue = this.clienteSelecionado.cpf;
@@ -136,6 +151,7 @@ export class ClienteComponent implements OnInit {
       }
     }
     this.limparTipoPessoa();
+    this.limparStatusCliente();
   }
 
   salvar(form: FormData){
@@ -207,6 +223,29 @@ export class ClienteComponent implements OnInit {
     }
   }
 
+  onchangeFiltroStatus(value: any) {
+    this.statusCliente = value.name;
+
+    if (value.name === "Ativo") {
+      this.statusClienteSelecionado = true;
+    } else if (value.name === "Inativo"){
+      this.statusClienteSelecionado = false;
+    }
+
+    const results: Cliente[] = [];
+    this.clientesVisiveis = this.clientes;
+    for (const cliente of this.clientesVisiveis) {
+      if (cliente.status === this.statusClienteSelecionado) {
+        results.push(cliente);
+      }
+    }
+    this.clientesVisiveis = results;
+    if (results.length === 0 || value.name === "Todos") {
+      this.listar();
+    }
+    this.onMudarPaginas(1);
+  }
+
   onMudarPaginas(pagina: number) {
     this.pager = this.pagerService.getPager(this.clientesVisiveis.length, pagina);
     this.clientesPaginadas = this.clientesVisiveis.slice(this.pager.startIndex, this.pager.endIndex + 1);
@@ -225,26 +264,13 @@ export class ClienteComponent implements OnInit {
     }
   }
 
-  disabilitaInputCpf(){
-    const cpf = this.clienteSelecionado.cpf
-    if(cpf?.length !== 0){
-      this.formCliente.controls['cpf'].disable();
-    }
+  limparStatusCliente(){
+    this.statusCliente = "";
+    this.selectedStatusDefault = this.status[0];
   }
 
-  disabilitaInputCnpj(){
-    const cnpj = this.clienteSelecionado.cnpj
-    if(cnpj?.length !== 0) {
-      this.formCliente.controls['cnpj'].disable();
-    }
-  }
-
-  habilitaInputCpf() {
-    this.formCliente.controls['cpf'].enable();
-  }
-
-  habilitaInputCnpj() {
-    this.formCliente.controls['cnpj'].enable();
+  setSelectedStatusCliente() {
+      this.selectedStatusDefault = this.status[0];
   }
 
 }
