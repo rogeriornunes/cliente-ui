@@ -3,12 +3,16 @@
   "version": "1.0.0",
   "description": "Cadastro de Cliente",
   "author": "Rogério Ricardo Nunes <rogerioricardonunes> (https://github.com/rogeriornunes)",
+  "engines": {
+    "node": "18.13.0",
+    "npm": "9.3.0"
+  },
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
-    "build": "ng build",
+    "build": "ng build --configuration=production",
     "watch": "ng build --watch --configuration development",
-    "test": "ng test"
+    "heroku-postbuild": "ng build --configuration=production"
   },
   "private": true,
   "dependencies": {
