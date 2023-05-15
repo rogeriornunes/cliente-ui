@@ -19,7 +19,7 @@ services:
     ports:
       - 8081:8080
   cliente-api:
-    image: softnunes/cliente-api:V1
+    image: rogerioricardonunes/cliente-api:V1
     container_name: cliente-api
     restart: always
     depends_on:
